@@ -4,6 +4,13 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Lumi — Centro de Estética Avançada</title>
+<meta name="description" content="Lumi Centro de Estética Avançada em Brasília. Protocolos personalizados de estética facial: botox, preenchimento, peeling, limpeza de pele e harmonização. Agende sua avaliação.">
+<meta name="theme-color" content="#f3ede7">
+<meta property="og:title" content="Lumi — Centro de Estética Avançada">
+<meta property="og:description" content="Protocolos personalizados para revelar a melhor versão da sua pele, com ciência, cuidado e estética avançada. Brasília, DF.">
+<meta property="og:image" content="logo.png">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -366,7 +373,21 @@ body::before {
    RESPONSIVE
 ======================================== */
 @media (max-width: 960px) {
-  .hero { grid-template-columns: 1fr; }
+  .hero {
+    grid-template-columns: 1fr;
+    position: relative;
+    /* mobile: foto de fundo atrás do texto */
+    background-image: url("WhatsApp%20Unknown%202026-06-01%20at%202.24.04%20PM/WhatsApp%20Image%202026-06-01%20at%202.22.54%20PM%20(2).jpeg");
+    background-size: cover;
+    background-position: center top;
+  }
+  .hero::after {
+    content: "";
+    position: absolute; inset: 0;
+    background: linear-gradient(to bottom, rgba(243,237,231,.88) 0%, rgba(243,237,231,.75) 60%, rgba(243,237,231,.95) 100%);
+    pointer-events: none;
+  }
+  .hero-text { position: relative; z-index: 1; }
   .hero-visual { display: none; }
   .proc-header { grid-template-columns: 1fr; }
   .proc-cta-side { align-items: flex-start; }
@@ -374,16 +395,23 @@ body::before {
   .coworking-inner { grid-template-columns: 1fr; }
   .footer-inner { grid-template-columns: 1fr 1fr; }
   .espaco-grid { grid-template-columns: 1fr 1fr; grid-template-rows: auto; }
-  .espaco-img:nth-child(1) { grid-column: 1 / -1; grid-row: auto; height: 300px; }
-  .espaco-img { height: 200px; }
+  .espaco-img:nth-child(1) { grid-column: 1 / -1; grid-row: auto; height: 280px; }
+  .espaco-img { height: 190px; }
 }
 @media (max-width: 620px) {
   .nav-links, .nav-cta { display: none; }
   .hamburger { display: flex; }
   .tratamentos-header { flex-direction: column; align-items: flex-start; }
-  .clube-grid, .espaco-grid { grid-template-columns: 1fr; }
-  .espaco-img:nth-child(1) { grid-column: 1; }
+  .tratamentos-grid { grid-template-columns: 1fr; }
+  .clube-grid { grid-template-columns: 1fr; }
+  .proc-categories { grid-template-columns: 1fr; }
+  .espaco-grid { grid-template-columns: 1fr; }
+  .espaco-img:nth-child(1) { grid-column: 1; height: 240px; }
+  .espaco-img { height: 200px; }
   .footer-inner { grid-template-columns: 1fr; }
+  .dep-card { width: 280px; }
+  .hero { padding-top: calc(var(--section-y) + 80px); min-height: 85svh; }
+  .hero-title { font-size: clamp(2.4rem, 10vw, 3.4rem); }
 }
 </style>
 </head>
@@ -857,12 +885,18 @@ body::before {
   }, { passive: true });
 
   // Hamburger
-  document.getElementById('hamburger-btn').addEventListener('click', () => {
-    const links = document.querySelector('.nav-links');
-    const open = links.style.display === 'flex';
-    links.style.cssText = open
-      ? ''
-      : 'display:flex;flex-direction:column;position:fixed;top:68px;left:0;right:0;background:rgba(243,237,231,.97);padding:1.5rem var(--gutter);gap:1.5rem;z-index:99;backdrop-filter:blur(12px);box-shadow:0 4px 20px rgba(42,32,28,.1)';
+  const navLinks = document.querySelector('.nav-links');
+  const hamburger = document.getElementById('hamburger-btn');
+  const OPEN_STYLE = 'display:flex;flex-direction:column;position:fixed;top:68px;left:0;right:0;background:rgba(243,237,231,.97);padding:1.5rem var(--gutter);gap:1.5rem;z-index:99;backdrop-filter:blur(12px);box-shadow:0 4px 20px rgba(42,32,28,.1)';
+  function closeMenu() { navLinks.style.cssText = ''; }
+  hamburger.addEventListener('click', () => {
+    navLinks.style.cssText = navLinks.style.display === 'flex' ? '' : OPEN_STYLE;
+  });
+  // Fecha ao clicar em qualquer link do menu
+  navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMenu));
+  // Fecha ao clicar fora
+  document.addEventListener('click', e => {
+    if (!nav.contains(e.target)) closeMenu();
   });
 
   // Scroll reveal
