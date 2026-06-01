@@ -1,0 +1,10 @@
+# Business documents — keep out of the repo
+*.pdf
+*.docx
+*.xlsx
+*.txt
+uploads/
+
+# OS
+.DS_Store
+Thumbs.db

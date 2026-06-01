@@ -1,0 +1,886 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Lumi — Centro de Estética Avançada</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ---- Tokens ---- */
+:root {
+  --rose: #a35549;
+  --rose-light: #c8847a;
+  --cream: #f3ede7;
+  --cream-deep: #ece3d9;
+  --sand: #cfc0ab;
+  --sage: #4d6959;
+  --forest: #0e3d26;
+  --ink: #2a201c;
+  --ink-soft: #534743;
+  --line: rgba(42,32,28,.12);
+  --serif: "Cormorant Garamond", serif;
+  --sans: "Poppins", system-ui, sans-serif;
+  --section-y: clamp(80px, 11vw, 140px);
+  --gutter: clamp(20px, 5vw, 72px);
+  --maxw: 1280px;
+}
+
+/* ---- Reset ---- */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: var(--sans); background: var(--cream); color: var(--ink); overflow-x: hidden; }
+img { display: block; max-width: 100%; }
+a { color: inherit; text-decoration: none; }
+ul { list-style: none; }
+
+/* ---- Grain overlay ---- */
+body::before {
+  content: "";
+  position: fixed; inset: 0;
+  pointer-events: none; z-index: 900; opacity: .025;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ---- Shared ---- */
+.eyebrow {
+  font-size: .68rem; font-weight: 500; letter-spacing: .2em;
+  text-transform: uppercase; color: var(--rose);
+}
+.section-title {
+  font-family: var(--serif); font-size: clamp(2.2rem, 5vw, 3.8rem);
+  font-weight: 400; line-height: 1.08; color: var(--forest);
+}
+.section-lead {
+  font-size: .92rem; line-height: 1.8; color: var(--ink-soft); max-width: 54ch;
+}
+.reveal { opacity: 0; transform: translateY(28px); transition: opacity .7s ease, transform .7s ease; }
+.reveal.visible { opacity: 1; transform: none; }
+
+/* ---- Buttons ---- */
+.btn {
+  display: inline-flex; align-items: center; gap: .5rem;
+  padding: .88rem 1.9rem; border-radius: 100px;
+  font-family: var(--sans); font-size: .8rem; font-weight: 500;
+  letter-spacing: .06em; cursor: pointer; border: none;
+  transition: transform .2s, box-shadow .2s, background .2s, color .2s, border-color .2s;
+}
+.btn:hover { transform: translateY(-2px); }
+.btn-primary { background: var(--forest); color: #fff; }
+.btn-primary:hover { background: var(--sage); box-shadow: 0 8px 28px rgba(14,61,38,.25); }
+.btn-outline { background: transparent; color: var(--forest); border: 1.5px solid currentColor; }
+.btn-outline:hover { background: var(--forest); color: #fff; }
+.btn-rose { background: var(--rose); color: #fff; }
+.btn-rose:hover { background: #8b3d35; box-shadow: 0 8px 28px rgba(163,85,73,.3); }
+
+/* ========================================
+   NAV
+======================================== */
+.nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  padding: 1.1rem var(--gutter);
+  display: flex; align-items: center; justify-content: space-between; gap: 2rem;
+  transition: background .3s, box-shadow .3s;
+}
+.nav.scrolled {
+  background: rgba(243,237,231,.92);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 1px 0 var(--line);
+}
+.nav-logo { display: flex; align-items: center; gap: .7rem; }
+.logo-text { display: flex; flex-direction: column; line-height: 1.15; }
+.logo-name { font-family: var(--serif); font-size: 1.3rem; font-weight: 600; letter-spacing: .18em; color: var(--forest); }
+.logo-sub { font-size: .5rem; font-weight: 500; letter-spacing: .22em; text-transform: uppercase; color: var(--rose); }
+.nav-links { display: flex; align-items: center; gap: 2.4rem; }
+.nav-links a { font-size: .75rem; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-soft); transition: color .2s; }
+.nav-links a:hover { color: var(--forest); }
+.hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; background: none; border: none; padding: 4px; }
+.hamburger span { display: block; width: 22px; height: 1.5px; background: var(--ink); }
+
+/* ========================================
+   HERO
+======================================== */
+.hero {
+  min-height: 100svh;
+  padding: calc(var(--section-y) + 72px) var(--gutter) var(--section-y);
+  display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center;
+  max-width: var(--maxw); margin: 0 auto;
+}
+.hero-text { position: relative; z-index: 1; }
+.hero-title {
+  font-family: var(--serif); font-size: clamp(2.8rem, 6.5vw, 5.4rem);
+  font-weight: 300; line-height: 1.05; color: var(--forest); margin: .9rem 0 1.4rem;
+}
+.hero-title em { font-style: italic; color: var(--rose); }
+.hero-body { font-size: .95rem; line-height: 1.8; color: var(--ink-soft); max-width: 42ch; margin-bottom: 2.4rem; }
+.hero-actions { display: flex; flex-wrap: wrap; gap: .9rem; }
+.hero-visual { position: relative; aspect-ratio: 4/5; max-height: 600px; }
+.hero-blob { position: absolute; overflow: hidden; }
+.hero-blob-1 {
+  inset: 0 0 10% 8%;
+  border-radius: 50% 47% 53% 50% / 50% 50% 50% 50%;
+  background: var(--cream-deep);
+}
+.hero-blob-2 {
+  bottom: -5%; right: 0; width: 42%; aspect-ratio: 1;
+  border-radius: 50% 50% 50% 50% / 60% 50% 50% 40%;
+  background: var(--sage);
+}
+.hero-blob img { width: 100%; height: 100%; object-fit: cover; }
+.hero-badge {
+  position: absolute; bottom: 10%; left: 0;
+  width: 120px; height: 120px;
+}
+.hero-badge-ring { width: 100%; height: 100%; animation: spin 20s linear infinite; }
+.hero-badge-center {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ========================================
+   TRATAMENTOS
+======================================== */
+.tratamentos { padding: var(--section-y) var(--gutter); max-width: var(--maxw); margin: 0 auto; }
+.tratamentos-header {
+  display: flex; align-items: flex-end; justify-content: space-between;
+  gap: 2rem; margin-bottom: 3.5rem; flex-wrap: wrap;
+}
+.tratamentos-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 1.25rem;
+}
+.treatment-card {
+  background: #fff; border-radius: 20px; padding: 1.8rem;
+  display: flex; flex-direction: column; gap: .9rem;
+  transition: transform .25s, box-shadow .25s;
+}
+.treatment-card:hover { transform: translateY(-4px); box-shadow: 0 16px 48px rgba(42,32,28,.09); }
+.treatment-icon {
+  width: 42px; height: 42px; border-radius: 12px; background: var(--cream);
+  display: flex; align-items: center; justify-content: center; font-size: 1.2rem;
+}
+.treatment-name { font-family: var(--serif); font-size: 1.35rem; font-weight: 500; color: var(--forest); }
+.treatment-desc { font-size: .83rem; line-height: 1.7; color: var(--ink-soft); flex: 1; }
+.treatment-cta {
+  align-self: flex-start; font-size: .76rem; font-weight: 500; letter-spacing: .06em;
+  color: var(--rose); display: flex; align-items: center; gap: .4rem; transition: gap .2s;
+}
+.treatment-cta:hover { gap: .7rem; }
+
+/* ========================================
+   CLUBE LUMI
+======================================== */
+.clube {
+  background: var(--forest); padding: var(--section-y) var(--gutter);
+  position: relative; overflow: hidden;
+}
+.clube::before {
+  content: ""; position: absolute; top: -20%; right: -8%; width: 50%; aspect-ratio: 1;
+  border-radius: 50%; background: radial-gradient(circle, rgba(77,105,89,.45) 0%, transparent 70%);
+  pointer-events: none;
+}
+.clube-inner { max-width: var(--maxw); margin: 0 auto; }
+.clube-header { margin-bottom: 3.5rem; }
+.clube-header .eyebrow { color: var(--rose-light); }
+.clube-header .section-title { color: #fff; margin: .75rem 0; }
+.clube-header .section-lead { color: rgba(255,255,255,.6); max-width: 52ch; }
+.clube-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(278px, 1fr)); gap: 1.25rem; }
+.clube-tier {
+  background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.1);
+  border-radius: 20px; padding: 1.8rem; display: flex; flex-direction: column; gap: 1.1rem;
+  transition: background .25s, border-color .25s;
+}
+.clube-tier:hover { background: rgba(255,255,255,.1); border-color: rgba(255,255,255,.2); }
+.clube-tier.featured { background: rgba(163,85,73,.22); border-color: rgba(163,85,73,.45); }
+.tier-badge {
+  display: inline-block; padding: .28rem .85rem; border-radius: 100px;
+  font-size: .66rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase;
+  background: rgba(255,255,255,.12); color: rgba(255,255,255,.8); align-self: flex-start;
+}
+.clube-tier.featured .tier-badge { background: var(--rose); color: #fff; }
+.tier-name { font-family: var(--serif); font-size: 1.85rem; font-weight: 400; color: #fff; }
+.tier-tagline { font-size: .83rem; line-height: 1.65; color: rgba(255,255,255,.62); flex: 1; }
+.tier-features { display: flex; flex-direction: column; gap: .48rem; }
+.tier-features li {
+  font-size: .8rem; color: rgba(255,255,255,.72);
+  display: flex; align-items: flex-start; gap: .5rem;
+}
+.tier-features li::before { content: "✦"; color: var(--rose-light); font-size: .65rem; margin-top: .18rem; flex-shrink: 0; }
+.tier-cta { margin-top: .5rem; }
+
+/* ========================================
+   PROCEDIMENTOS
+======================================== */
+.procedimentos { padding: var(--section-y) var(--gutter); max-width: var(--maxw); margin: 0 auto; }
+.proc-header {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 2rem 4rem;
+  align-items: end; margin-bottom: 3.5rem;
+}
+.proc-cta-side { display: flex; flex-direction: column; gap: 1rem; align-items: flex-end; }
+.proc-cta-note { font-size: .8rem; color: var(--ink-soft); max-width: 28ch; text-align: right; }
+.proc-categories { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 2rem 3rem; }
+.proc-cat-title {
+  font-family: var(--serif); font-size: 1.15rem; font-weight: 500; color: var(--forest);
+  padding-bottom: .7rem; margin-bottom: .9rem; border-bottom: 1px solid var(--line);
+}
+.proc-cat ul { display: flex; flex-direction: column; gap: .55rem; }
+.proc-cat li { font-size: .85rem; color: var(--ink-soft); padding-left: 1rem; position: relative; }
+.proc-cat li::before { content: "—"; position: absolute; left: 0; color: var(--sand); font-size: .7rem; top: .1rem; }
+
+/* ========================================
+   DEPOIMENTOS
+======================================== */
+.depoimentos { padding: var(--section-y) 0; background: var(--cream-deep); overflow: hidden; }
+.depoimentos-header { padding: 0 var(--gutter); max-width: var(--maxw); margin: 0 auto 3rem; }
+.marquee-wrap { overflow: hidden; }
+.marquee-track {
+  display: flex; gap: 1.25rem; width: max-content;
+  animation: marquee 44s linear infinite;
+}
+.marquee-track:hover { animation-play-state: paused; }
+@keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+.dep-card {
+  background: #fff; border-radius: 18px; padding: 1.8rem 2rem;
+  width: 310px; flex-shrink: 0; display: flex; flex-direction: column; gap: .85rem;
+}
+.dep-stars { color: var(--rose); font-size: .8rem; letter-spacing: .08em; }
+.dep-text {
+  font-family: var(--serif); font-size: 1.08rem; font-weight: 400;
+  line-height: 1.55; color: var(--ink); font-style: italic; flex: 1;
+}
+.dep-author {
+  font-size: .72rem; font-weight: 500; letter-spacing: .08em;
+  text-transform: uppercase; color: var(--ink-soft);
+}
+
+/* ========================================
+   ESPAÇO
+======================================== */
+.espaco { padding: var(--section-y) var(--gutter); max-width: var(--maxw); margin: 0 auto; }
+.espaco-header { margin-bottom: 2.5rem; }
+.espaco-grid {
+  display: grid; grid-template-columns: 1.5fr 1fr 1fr;
+  grid-template-rows: 240px 240px; gap: .875rem;
+  border-radius: 20px; overflow: hidden;
+}
+.espaco-img { overflow: hidden; background: var(--cream-deep); }
+.espaco-img img { width: 100%; height: 100%; object-fit: cover; transition: transform .6s ease; display: block; }
+.espaco-img:hover img { transform: scale(1.05); }
+.espaco-img:nth-child(1) { grid-column: 1; grid-row: 1 / 3; }
+
+/* ========================================
+   COWORKING
+======================================== */
+.coworking { background: var(--cream-deep); padding: var(--section-y) var(--gutter); }
+.coworking-inner {
+  max-width: var(--maxw); margin: 0 auto;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 3rem 5rem; align-items: center;
+}
+.coworking-text .section-title { margin: .75rem 0 1rem; }
+.coworking-text .section-lead { margin-bottom: 2rem; }
+.pack-list { display: flex; flex-direction: column; gap: .85rem; }
+.pack-item {
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+  background: #fff; border-radius: 14px; padding: 1.1rem 1.4rem;
+}
+.pack-name { font-family: var(--serif); font-size: 1.1rem; color: var(--forest); }
+.pack-detail { font-size: .75rem; color: var(--ink-soft); margin-top: .15rem; }
+.pack-badge {
+  font-size: .66rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase;
+  color: var(--rose); background: var(--cream); padding: .24rem .75rem; border-radius: 100px; white-space: nowrap;
+}
+.coworking-note {
+  font-size: .78rem; color: var(--ink-soft); line-height: 1.65;
+  padding: 1rem 1.25rem; background: rgba(14,61,38,.06); border-radius: 10px; margin-top: .25rem;
+}
+
+/* ========================================
+   FOOTER
+======================================== */
+.footer { background: var(--forest); color: rgba(255,255,255,.65); padding: var(--section-y) var(--gutter) 3rem; }
+.footer-inner {
+  max-width: var(--maxw); margin: 0 auto;
+  display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 3rem 4rem;
+}
+.footer-brand-logo { display: flex; align-items: center; gap: .7rem; margin-bottom: 1.1rem; }
+.footer-brand-logo .logo-name { color: #fff; }
+.footer-brand-logo .logo-sub { color: rgba(200,132,122,.85); }
+.footer-tagline { font-size: .82rem; line-height: 1.75; color: rgba(255,255,255,.5); max-width: 32ch; }
+.footer-col-title {
+  font-size: .65rem; font-weight: 600; letter-spacing: .2em; text-transform: uppercase;
+  color: rgba(255,255,255,.35); margin-bottom: 1.2rem;
+}
+.footer-links { display: flex; flex-direction: column; gap: .55rem; }
+.footer-links a { font-size: .83rem; color: rgba(255,255,255,.6); transition: color .2s; }
+.footer-links a:hover { color: #fff; }
+.footer-contact { display: flex; flex-direction: column; gap: .7rem; }
+.footer-contact-row { display: flex; align-items: flex-start; gap: .55rem; font-size: .8rem; color: rgba(255,255,255,.6); }
+.footer-contact-row a { color: rgba(255,255,255,.6); transition: color .2s; }
+.footer-contact-row a:hover { color: #fff; }
+.footer-icon { flex-shrink: 0; width: 15px; text-align: center; margin-top: .05rem; opacity: .6; }
+.footer-bottom {
+  max-width: var(--maxw); margin: 2.5rem auto 0; padding-top: 1.5rem;
+  border-top: 1px solid rgba(255,255,255,.1);
+  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: .75rem;
+  font-size: .72rem; color: rgba(255,255,255,.28);
+}
+
+/* ========================================
+   FLOATING WA
+======================================== */
+.wa-float {
+  position: fixed; bottom: 1.75rem; right: 1.75rem; z-index: 200;
+  width: 56px; height: 56px; background: #25D366; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4px 20px rgba(37,211,102,.38);
+  transition: transform .2s, box-shadow .2s;
+}
+.wa-float:hover { transform: scale(1.1); box-shadow: 0 8px 30px rgba(37,211,102,.5); }
+.wa-float svg { fill: #fff; }
+
+/* ========================================
+   RESPONSIVE
+======================================== */
+@media (max-width: 960px) {
+  .hero { grid-template-columns: 1fr; }
+  .hero-visual { display: none; }
+  .proc-header { grid-template-columns: 1fr; }
+  .proc-cta-side { align-items: flex-start; }
+  .proc-cta-note { text-align: left; }
+  .coworking-inner { grid-template-columns: 1fr; }
+  .footer-inner { grid-template-columns: 1fr 1fr; }
+  .espaco-grid { grid-template-columns: 1fr 1fr; grid-template-rows: auto; }
+  .espaco-img:nth-child(1) { grid-column: 1 / -1; grid-row: auto; height: 300px; }
+  .espaco-img { height: 200px; }
+}
+@media (max-width: 620px) {
+  .nav-links, .nav-cta { display: none; }
+  .hamburger { display: flex; }
+  .tratamentos-header { flex-direction: column; align-items: flex-start; }
+  .clube-grid, .espaco-grid { grid-template-columns: 1fr; }
+  .espaco-img:nth-child(1) { grid-column: 1; }
+  .footer-inner { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- FLOATING WHATSAPP -->
+<a class="wa-float" href="https://wa.me/556181770719?text=Olá!%20Gostaria%20de%20agendar%20uma%20avaliação%20na%20Lumi." target="_blank" rel="noopener" aria-label="WhatsApp Lumi">
+  <svg width="26" height="26" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0 0 12.04 2m.01 1.67c2.2 0 4.26.86 5.82 2.42 1.56 1.56 2.41 3.63 2.41 5.82 0 4.54-3.7 8.23-8.24 8.23-1.48 0-2.93-.39-4.19-1.15l-.3-.17-3.12.82.83-3.04-.2-.32A8.188 8.188 0 0 1 3.8 11.91c.01-4.54 3.7-8.24 8.25-8.24M8.53 7.33c-.16 0-.43.06-.66.31-.22.25-.87.86-.87 2.07 0 1.22.89 2.39 1.01 2.56.14.17 1.76 2.67 4.25 3.73.59.26 1.05.41 1.41.52.59.19 1.13.16 1.56.1.48-.07 1.46-.6 1.67-1.18.21-.58.21-1.08.15-1.18-.07-.1-.23-.16-.48-.28-.25-.12-1.47-.72-1.69-.8-.23-.08-.39-.12-.55.12-.17.23-.64.8-.78.96-.14.17-.28.19-.53.07-.25-.12-1.05-.39-2-.12-.78.66-1.31 1.49-1.46 1.74-.16.25-.02.38.11.5.12.11.26.29.38.43.12.14.16.24.24.4.08.17.04.31-.02.43-.06.12-.55 1.32-.76 1.81-.21.49-.41.42-.56.43-.14 0-.3 0-.53-.1z"/>
+  </svg>
+</a>
+
+<!-- NAV -->
+<nav class="nav" id="main-nav">
+  <a class="nav-logo" href="#">
+    <!-- LUMI logo mark SVG -->
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="38" height="38" aria-hidden="true">
+      <defs>
+        <linearGradient id="lg-nav" x1="10%" y1="0%" x2="90%" y2="100%">
+          <stop offset="0%" stop-color="#c8847a"/>
+          <stop offset="100%" stop-color="#7a3030"/>
+        </linearGradient>
+      </defs>
+      <!-- Outer arc — gap at upper-left (10→12 o'clock) -->
+      <path d="M 50,8 A 42,42 0 1 1 15,29" fill="none" stroke="url(#lg-nav)" stroke-width="3.5" stroke-linecap="round"/>
+      <!-- L vertical stem -->
+      <line x1="40" y1="12" x2="40" y2="70" stroke="url(#lg-nav)" stroke-width="3.5" stroke-linecap="round"/>
+      <!-- Bottom U-curve -->
+      <path d="M 27,66 Q 50,87 68,60" fill="none" stroke="url(#lg-nav)" stroke-width="3.5" stroke-linecap="round"/>
+      <!-- Dot -->
+      <circle cx="67" cy="44" r="3" fill="url(#lg-nav)"/>
+    </svg>
+    <span class="logo-text">
+      <span class="logo-name">LUMI</span>
+      <span class="logo-sub">Centro de Estética Avançada</span>
+    </span>
+  </a>
+
+  <ul class="nav-links">
+    <li><a href="#tratamentos">Tratamentos</a></li>
+    <li><a href="#clube">Clube</a></li>
+    <li><a href="#espaco">Espaço</a></li>
+    <li><a href="#coworking">Coworking</a></li>
+  </ul>
+
+  <a class="btn btn-primary nav-cta" href="https://wa.me/556181770719?text=Olá!%20Gostaria%20de%20agendar%20uma%20avaliação%20na%20Lumi." target="_blank" rel="noopener">Agendar</a>
+  <button class="hamburger" aria-label="Menu" id="hamburger-btn">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-text reveal">
+    <p class="eyebrow">Centro de Estética Avançada · Brasília</p>
+    <h1 class="hero-title">Sua pele merece<br><em>inteligência</em> e leveza</h1>
+    <p class="hero-body">Protocolos personalizados para revelar a melhor versão da sua pele, com ciência, cuidado e atendimento humanizado.</p>
+    <div class="hero-actions">
+      <a class="btn btn-primary" href="https://wa.me/556181770719?text=Olá!%20Gostaria%20de%20agendar%20uma%20avaliação%20gratuita%20na%20Lumi." target="_blank" rel="noopener">Agendar avaliação</a>
+      <a class="btn btn-outline" href="#tratamentos">Conhecer tratamentos</a>
+    </div>
+  </div>
+
+  <div class="hero-visual">
+    <div class="hero-blob hero-blob-1">
+      <img src="WhatsApp%20Unknown%202026-06-01%20at%202.24.04%20PM/WhatsApp%20Image%202026-06-01%20at%202.22.54%20PM%20(2).jpeg"
+           alt="Sala de tratamento com cadeira branca e espelho iluminado oval" loading="eager" />
+    </div>
+    <div class="hero-blob hero-blob-2">
+      <img src="WhatsApp%20Unknown%202026-06-01%20at%202.24.04%20PM/WhatsApp%20Image%202026-06-01%20at%202.22.53%20PM%20(2).jpeg"
+           alt="Sala de tratamento em tons rosê" loading="eager" />
+    </div>
+
+    <!-- Spinning badge -->
+    <div class="hero-badge" aria-hidden="true">
+      <svg class="hero-badge-ring" viewBox="0 0 130 130" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <path id="ctp" d="M 65,65 m -50,0 a 50,50 0 1,1 100,0 a 50,50 0 1,1 -100,0"/>
+        </defs>
+        <text font-family="Poppins,sans-serif" font-size="9.5" font-weight="500" letter-spacing="2.8" fill="#0e3d26">
+          <textPath href="#ctp">LUMI · CENTRO DE ESTÉTICA AVANÇADA · </textPath>
+        </text>
+      </svg>
+      <div class="hero-badge-center">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="38" height="38">
+          <defs><linearGradient id="lg-badge" x1="10%" y1="0%" x2="90%" y2="100%"><stop offset="0%" stop-color="#c8847a"/><stop offset="100%" stop-color="#7a3030"/></linearGradient></defs>
+          <path d="M 50,8 A 42,42 0 1 1 15,29" fill="none" stroke="url(#lg-badge)" stroke-width="3.5" stroke-linecap="round"/>
+          <line x1="40" y1="12" x2="40" y2="70" stroke="url(#lg-badge)" stroke-width="3.5" stroke-linecap="round"/>
+          <path d="M 27,66 Q 50,87 68,60" fill="none" stroke="url(#lg-badge)" stroke-width="3.5" stroke-linecap="round"/>
+          <circle cx="67" cy="44" r="3" fill="url(#lg-badge)"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TRATAMENTOS -->
+<section class="tratamentos" id="tratamentos">
+  <div class="tratamentos-header reveal">
+    <div>
+      <p class="eyebrow">Tratamentos</p>
+      <h2 class="section-title">Estética com ciência<br>e naturalidade</h2>
+    </div>
+    <p class="section-lead">Cada protocolo é desenhado exclusivamente para você, respeitando sua anatomia e potencializando sua beleza natural.</p>
+  </div>
+
+  <div class="tratamentos-grid">
+    <div class="treatment-card reveal">
+      <div class="treatment-icon">💉</div>
+      <h3 class="treatment-name">Toxina Botulínica</h3>
+      <p class="treatment-desc">Suaviza linhas de expressão com precisão e naturalidade, preservando a mobilidade e autenticidade do seu rosto.</p>
+      <a class="treatment-cta" href="https://wa.me/556181770719?text=Olá!%20Gostaria%20de%20saber%20mais%20sobre%20toxina%20botulínica%20na%20Lumi." target="_blank" rel="noopener">Saber mais →</a>
+    </div>
+    <div class="treatment-card reveal">
+      <div class="treatment-icon">✨</div>
+      <h3 class="treatment-name">Preenchimento Facial</h3>
+      <p class="treatment-desc">Volumização natural com ácido hialurônico, respeitando sua anatomia para resultados harmoniosos e femininos.</p>
+      <a class="treatment-cta" href="https://wa.me/556181770719?text=Olá!%20Gostaria%20de%20saber%20mais%20sobre%20preenchimento%20facial%20na%20Lumi." target="_blank" rel="noopener">Saber mais →</a>
+    </div>
+    <div class="treatment-card reveal">
+      <div class="treatment-icon">🌿</div>
+      <h3 class="treatment-name">Limpeza de Pele</h3>
+      <p class="treatment-desc">Higienização profunda, remoção de impurezas e renovação celular para uma pele limpa, lisa e radiante.</p>
+      <a class="treatment-cta" href="https://wa.me/556181770719?text=Olá!%20Gostaria%20de%20agendar%20uma%20limpeza%20de%20pele%20na%20Lumi." target="_blank" rel="noopener">Saber mais →</a>
+    </div>
+    <div class="treatment-card reveal">
+      <div class="treatment-icon">🌸</div>
+      <h3 class="treatment-name">Peeling</h3>
+      <p class="treatment-desc">Renovação e uniformização do tom com protocolos de peeling adaptados ao seu tipo e necessidade específica.</p>
+      <a class="treatment-cta" href="https://wa.me/556181770719?text=Olá!%20Gostaria%20de%20saber%20mais%20sobre%20peeling%20na%20Lumi." target="_blank" rel="noopener">Saber mais →</a>
+    </div>
+    <div class="treatment-card reveal">
+      <div class="treatment-icon">⚕️</div>
+      <h3 class="treatment-name">Protocolo para Acne</h3>
+      <p class="treatment-desc">Tratamento completo e personalizado para pele com tendência acneica, combinando procedimentos e orientações clínicas.</p>
+      <a class="treatment-cta" href="https://wa.me/556181770719?text=Olá!%20Gostaria%20de%20saber%20mais%20sobre%20o%20protocolo%20para%20acne%20da%20Lumi." target="_blank" rel="noopener">Saber mais →</a>
+    </div>
+    <div class="treatment-card reveal">
+      <div class="treatment-icon">☀️</div>
+      <h3 class="treatment-name">Protocolo para Melasma</h3>
+      <p class="treatment-desc">Despigmentação controlada com acompanhamento contínuo — um programa estratégico para uniformizar o tom da pele.</p>
+      <a class="treatment-cta" href="https://wa.me/556181770719?text=Olá!%20Gostaria%20de%20saber%20mais%20sobre%20o%20protocolo%20para%20melasma%20da%20Lumi." target="_blank" rel="noopener">Saber mais →</a>
+    </div>
+    <div class="treatment-card reveal">
+      <div class="treatment-icon">💫</div>
+      <h3 class="treatment-name">Harmonização Facial</h3>
+      <p class="treatment-desc">Equilíbrio e naturalidade. Um olhar técnico e artístico para realçar seus traços com leveza e respeito à sua identidade.</p>
+      <a class="treatment-cta" href="https://wa.me/556181770719?text=Olá!%20Gostaria%20de%20saber%20mais%20sobre%20harmonização%20facial%20na%20Lumi." target="_blank" rel="noopener">Saber mais →</a>
+    </div>
+  </div>
+</section>
+
+<!-- CLUBE LUMI -->
+<section class="clube" id="clube">
+  <div class="clube-inner">
+    <div class="clube-header reveal">
+      <p class="eyebrow">Clube Lumi</p>
+      <h2 class="section-title">Cuidado contínuo,<br>resultados reais</h2>
+      <p class="section-lead">O Clube Lumi foi pensado para quem quer cuidar da pele com constância — porque a transformação mais bonita é a que vem com o tempo.</p>
+    </div>
+
+    <div class="clube-grid">
+      <div class="clube-tier reveal">
+        <span class="tier-badge">Essência</span>
+        <h3 class="tier-name">Essência</h3>
+        <p class="tier-tagline">O primeiro passo para cuidar da sua pele com leveza, constância e naturalidade. Ideal para quem está começando a jornada de cuidados.</p>
+        <ul class="tier-features">
+          <li>Avaliação de pele personalizada</li>
+          <li>Protocolo de limpeza e hidratação</li>
+          <li>Acompanhamento mensal</li>
+          <li>Orientações de skincare domiciliar</li>
+        </ul>
+        <a class="btn btn-outline tier-cta" style="color:#fff;border-color:rgba(255,255,255,.35);" href="https://wa.me/556181770719?text=Olá!%20Gostaria%20de%20saber%20mais%20sobre%20o%20plano%20Essência%20do%20Clube%20Lumi." target="_blank" rel="noopener">Quero começar</a>
+      </div>
+
+      <div class="clube-tier featured reveal">
+        <span class="tier-badge">Mais escolhido</span>
+        <h3 class="tier-name">Ilumina</h3>
+        <p class="tier-tagline">Um protocolo pensado para transformar sua pele com acompanhamento e estratégia. Três meses de cuidado presencial ou online.</p>
+        <ul class="tier-features">
+          <li>1 consulta inicial + 2 retornos</li>
+          <li>Acompanhamento contínuo via WhatsApp</li>
+          <li>Atendimentos presenciais ou online</li>
+          <li>Plano de skincare personalizado</li>
+          <li>Acesso à comunidade Lumi</li>
+        </ul>
+        <a class="btn btn-rose tier-cta" href="https://wa.me/556181770719?text=Olá!%20Tenho%20interesse%20no%20Programa%20Ilumina%20do%20Clube%20Lumi.%20Podem%20me%20ajudar%3F" target="_blank" rel="noopener">Quero o Ilumina</a>
+      </div>
+
+      <div class="clube-tier reveal">
+        <span class="tier-badge">Max</span>
+        <h3 class="tier-name">Max</h3>
+        <p class="tier-tagline">O mais completo nível de cuidado: prevenir, tratar e regenerar sua pele com inteligência. Para resultados profundos e duradouros.</p>
+        <ul class="tier-features">
+          <li>Protocolos combinados e avançados</li>
+          <li>Acompanhamento intensivo</li>
+          <li>Sessões mensais incluídas</li>
+          <li>Prioridade total de agendamento</li>
+          <li>Consultoria de rotina e estilo de vida</li>
+        </ul>
+        <a class="btn btn-outline tier-cta" style="color:#fff;border-color:rgba(255,255,255,.35);" href="https://wa.me/556181770719?text=Olá!%20Gostaria%20de%20saber%20mais%20sobre%20o%20plano%20Max%20do%20Clube%20Lumi." target="_blank" rel="noopener">Quero o Max</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROCEDIMENTOS -->
+<section class="procedimentos" id="procedimentos">
+  <div class="proc-header reveal">
+    <div>
+      <p class="eyebrow">Procedimentos</p>
+      <h2 class="section-title">Tudo que sua<br>pele precisa</h2>
+    </div>
+    <div class="proc-cta-side">
+      <p class="proc-cta-note">Agende uma avaliação e receba um protocolo personalizado para suas necessidades.</p>
+      <a class="btn btn-primary" href="https://wa.me/556181770719?text=Olá!%20Gostaria%20de%20consultar%20os%20valores%20dos%20procedimentos%20da%20Lumi." target="_blank" rel="noopener">Consultar valores</a>
+    </div>
+  </div>
+
+  <div class="proc-categories reveal">
+    <div class="proc-cat">
+      <h3 class="proc-cat-title">Injetáveis</h3>
+      <ul>
+        <li>Toxina Botulínica — Terço Superior</li>
+        <li>Botox Full Face</li>
+        <li>Preenchimento Labial</li>
+        <li>Preenchimento Facial</li>
+        <li>Harmonização Facial Completa</li>
+        <li>Bioestimuladores de Colágeno</li>
+      </ul>
+    </div>
+    <div class="proc-cat">
+      <h3 class="proc-cat-title">Pele</h3>
+      <ul>
+        <li>Limpeza de Pele Profunda</li>
+        <li>Peeling Químico</li>
+        <li>Peeling Físico</li>
+        <li>Microagulhamento</li>
+        <li>Hidratação Profunda</li>
+        <li>Radiofrequência</li>
+      </ul>
+    </div>
+    <div class="proc-cat">
+      <h3 class="proc-cat-title">Protocolos</h3>
+      <ul>
+        <li>Protocolo Acne (6 sessões)</li>
+        <li>Protocolo Melasma (6 sessões)</li>
+        <li>Programa Ilumina (3 meses)</li>
+        <li>Rejuvenescimento Facial</li>
+        <li>Lifting Não-Cirúrgico</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- DEPOIMENTOS -->
+<section class="depoimentos" id="depoimentos">
+  <div class="depoimentos-header reveal">
+    <p class="eyebrow">Depoimentos</p>
+    <h2 class="section-title">O que nossas<br>clientes dizem</h2>
+  </div>
+
+  <div class="marquee-wrap">
+    <div class="marquee-track">
+      <!-- Set 1 -->
+      <div class="dep-card">
+        <div class="dep-stars">★★★★★</div>
+        <p class="dep-text">"Nossa, gostei bastante da recepção e dos atendimentos. Estão de parabénssss! Dar vontade de fechar os pacotes todos."</p>
+        <p class="dep-author">Cliente Lumi</p>
+      </div>
+      <div class="dep-card">
+        <div class="dep-stars">★★★★★</div>
+        <p class="dep-text">"Que Deus abençoe vocês cada dia e continue assim, porque esta é a diferença — o acolhimento."</p>
+        <p class="dep-author">Cliente Lumi</p>
+      </div>
+      <div class="dep-card">
+        <div class="dep-stars">★★★★★</div>
+        <p class="dep-text">"Ótimo atendimento, obrigada por cuidar com carinho do meu rosto! Já senti muita diferença. Hoje a pele está mais lisa e hidratada."</p>
+        <p class="dep-author">Cliente Lumi</p>
+      </div>
+      <div class="dep-card">
+        <div class="dep-stars">★★★★★</div>
+        <p class="dep-text">"Raquel é uma profissional extremamente competente que escuta com carinho, explica todas as etapas com tranquilidade, segurança e respeito à anatomia natural."</p>
+        <p class="dep-author">Jacqueline Rocha</p>
+      </div>
+      <div class="dep-card">
+        <div class="dep-stars">★★★★★</div>
+        <p class="dep-text">"Avalio seu trabalho de maneira muito positiva — há zelo, atualização e segurança nos procedimentos. Espero que nossa parceria continue dando certo."</p>
+        <p class="dep-author">Cliente Lumi</p>
+      </div>
+      <div class="dep-card">
+        <div class="dep-stars">★★★★★</div>
+        <p class="dep-text">"Estou sentindo a beleza entrando em mim!!! Obrigada pelo cuidado!"</p>
+        <p class="dep-author">Cliente Lumi</p>
+      </div>
+      <div class="dep-card">
+        <div class="dep-stars">★★★★★</div>
+        <p class="dep-text">"Minha sobrancelha amanheceu mega alta. Ameeiiii! Me sentindo o poder com essa sobrancelha alta."</p>
+        <p class="dep-author">Cliente Lumi</p>
+      </div>
+      <div class="dep-card">
+        <div class="dep-stars">★★★★★</div>
+        <p class="dep-text">"Todo mundo percebeu a diferença e agora uso menos maquiagem para esconder minhas olheiras. Amei o procedimento e o carinho da equipe!"</p>
+        <p class="dep-author">Cliente Lumi</p>
+      </div>
+      <div class="dep-card">
+        <div class="dep-stars">★★★★★</div>
+        <p class="dep-text">"Eu amei a sessão! Estava muito tensa e na hora que saí já senti muita diferença. Vocês arrasam! Continue prestando esse trabalho de excelência."</p>
+        <p class="dep-author">Cliente Lumi</p>
+      </div>
+      <!-- Set 2 — duplicate for seamless loop -->
+      <div class="dep-card">
+        <div class="dep-stars">★★★★★</div>
+        <p class="dep-text">"Nossa, gostei bastante da recepção e dos atendimentos. Estão de parabénssss! Dar vontade de fechar os pacotes todos."</p>
+        <p class="dep-author">Cliente Lumi</p>
+      </div>
+      <div class="dep-card">
+        <div class="dep-stars">★★★★★</div>
+        <p class="dep-text">"Que Deus abençoe vocês cada dia e continue assim, porque esta é a diferença — o acolhimento."</p>
+        <p class="dep-author">Cliente Lumi</p>
+      </div>
+      <div class="dep-card">
+        <div class="dep-stars">★★★★★</div>
+        <p class="dep-text">"Ótimo atendimento, obrigada por cuidar com carinho do meu rosto! Já senti muita diferença. Hoje a pele está mais lisa e hidratada."</p>
+        <p class="dep-author">Cliente Lumi</p>
+      </div>
+      <div class="dep-card">
+        <div class="dep-stars">★★★★★</div>
+        <p class="dep-text">"Raquel é uma profissional extremamente competente que escuta com carinho, explica todas as etapas com tranquilidade, segurança e respeito à anatomia natural."</p>
+        <p class="dep-author">Jacqueline Rocha</p>
+      </div>
+      <div class="dep-card">
+        <div class="dep-stars">★★★★★</div>
+        <p class="dep-text">"Avalio seu trabalho de maneira muito positiva — há zelo, atualização e segurança nos procedimentos. Espero que nossa parceria continue dando certo."</p>
+        <p class="dep-author">Cliente Lumi</p>
+      </div>
+      <div class="dep-card">
+        <div class="dep-stars">★★★★★</div>
+        <p class="dep-text">"Estou sentindo a beleza entrando em mim!!! Obrigada pelo cuidado!"</p>
+        <p class="dep-author">Cliente Lumi</p>
+      </div>
+      <div class="dep-card">
+        <div class="dep-stars">★★★★★</div>
+        <p class="dep-text">"Minha sobrancelha amanheceu mega alta. Ameeiiii! Me sentindo o poder com essa sobrancelha alta."</p>
+        <p class="dep-author">Cliente Lumi</p>
+      </div>
+      <div class="dep-card">
+        <div class="dep-stars">★★★★★</div>
+        <p class="dep-text">"Todo mundo percebeu a diferença e agora uso menos maquiagem para esconder minhas olheiras. Amei o procedimento e o carinho da equipe!"</p>
+        <p class="dep-author">Cliente Lumi</p>
+      </div>
+      <div class="dep-card">
+        <div class="dep-stars">★★★★★</div>
+        <p class="dep-text">"Eu amei a sessão! Estava muito tensa e na hora que saí já senti muita diferença. Vocês arrasam! Continue prestando esse trabalho de excelência."</p>
+        <p class="dep-author">Cliente Lumi</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ESPAÇO -->
+<section class="espaco" id="espaco">
+  <div class="espaco-header reveal">
+    <p class="eyebrow">Nosso Espaço</p>
+    <h2 class="section-title">Ambiente pensado<br>para o seu bem-estar</h2>
+  </div>
+
+  <div class="espaco-grid reveal">
+    <div class="espaco-img">
+      <img src="WhatsApp%20Unknown%202026-06-01%20at%202.24.04%20PM/WhatsApp%20Image%202026-06-01%20at%202.22.56%20PM.jpeg"
+           alt="Corredor com parede verde e planta" loading="lazy" />
+    </div>
+    <div class="espaco-img">
+      <img src="WhatsApp%20Unknown%202026-06-01%20at%202.24.04%20PM/WhatsApp%20Image%202026-06-01%20at%202.22.58%20PM.jpeg"
+           alt="Recepção com laptop e parede de madeira aquecida" loading="lazy" />
+    </div>
+    <div class="espaco-img">
+      <img src="WhatsApp%20Unknown%202026-06-01%20at%202.24.04%20PM/WhatsApp%20Image%202026-06-01%20at%202.22.54%20PM%20(3).jpeg"
+           alt="Mesa de consultório com cadeiras caramelo" loading="lazy" />
+    </div>
+    <div class="espaco-img">
+      <img src="WhatsApp%20Unknown%202026-06-01%20at%202.24.04%20PM/WhatsApp%20Image%202026-06-01%20at%202.22.57%20PM.jpeg"
+           alt="Detalhe das cadeiras em couro caramelo" loading="lazy" />
+    </div>
+    <div class="espaco-img">
+      <img src="WhatsApp%20Unknown%202026-06-01%20at%202.24.04%20PM/WhatsApp%20Image%202026-06-01%20at%202.22.55%20PM.jpeg"
+           alt="Prateleiras iluminadas com produtos e minibar" loading="lazy" />
+    </div>
+  </div>
+</section>
+
+<!-- COWORKING -->
+<section class="coworking" id="coworking">
+  <div class="coworking-inner">
+    <div class="coworking-text reveal">
+      <p class="eyebrow">Espaço Profissional</p>
+      <h2 class="section-title">Consultório para<br>profissionais de estética</h2>
+      <p class="section-lead">Ambiente moderno, equipado e acolhedor para profissionais que buscam um espaço de qualidade para seus atendimentos em Brasília.</p>
+      <a class="btn btn-primary" href="https://wa.me/556181770719?text=Olá!%20Tenho%20interesse%20no%20espaço%20de%20coworking%20da%20Lumi.%20Podem%20me%20passar%20mais%20informações%3F" target="_blank" rel="noopener">Saber mais sobre o espaço</a>
+    </div>
+
+    <div class="reveal">
+      <div class="pack-list">
+        <div class="pack-item">
+          <div>
+            <p class="pack-name">Hora Avulsa</p>
+            <p class="pack-detail">Flexibilidade quando você precisa</p>
+          </div>
+          <span class="pack-badge">Consulte</span>
+        </div>
+        <div class="pack-item">
+          <div>
+            <p class="pack-name">Pacote 5 horas</p>
+            <p class="pack-detail">Uso ao longo do mês</p>
+          </div>
+          <span class="pack-badge">Consulte</span>
+        </div>
+        <div class="pack-item">
+          <div>
+            <p class="pack-name">Pacote 10 horas</p>
+            <p class="pack-detail">Uso ao longo do mês</p>
+          </div>
+          <span class="pack-badge">Consulte</span>
+        </div>
+        <div class="pack-item">
+          <div>
+            <p class="pack-name">Pacote 20 horas</p>
+            <p class="pack-detail">Uso ao longo do mês</p>
+          </div>
+          <span class="pack-badge">Consulte</span>
+        </div>
+      </div>
+      <p class="coworking-note">Reservas em blocos fechados a partir de 1h. Após a primeira hora, incrementos de 30 minutos. Disponibilidade sujeita à agenda da clínica.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div>
+      <div class="footer-brand-logo">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="34" height="34" aria-hidden="true">
+          <defs><linearGradient id="lg-foot" x1="10%" y1="0%" x2="90%" y2="100%"><stop offset="0%" stop-color="#c8847a"/><stop offset="100%" stop-color="#7a3030"/></linearGradient></defs>
+          <path d="M 50,8 A 42,42 0 1 1 15,29" fill="none" stroke="url(#lg-foot)" stroke-width="3.5" stroke-linecap="round"/>
+          <line x1="40" y1="12" x2="40" y2="70" stroke="url(#lg-foot)" stroke-width="3.5" stroke-linecap="round"/>
+          <path d="M 27,66 Q 50,87 68,60" fill="none" stroke="url(#lg-foot)" stroke-width="3.5" stroke-linecap="round"/>
+          <circle cx="67" cy="44" r="3" fill="url(#lg-foot)"/>
+        </svg>
+        <span class="logo-text">
+          <span class="logo-name">LUMI</span>
+          <span class="logo-sub" style="color:rgba(200,132,122,.85)">Centro de Estética Avançada</span>
+        </span>
+      </div>
+      <p class="footer-tagline">Protocolos personalizados para revelar a melhor versão da sua pele, com ciência e cuidado humanizado em Brasília.</p>
+    </div>
+
+    <div>
+      <p class="footer-col-title">Navegação</p>
+      <ul class="footer-links">
+        <li><a href="#tratamentos">Tratamentos</a></li>
+        <li><a href="#clube">Clube Lumi</a></li>
+        <li><a href="#procedimentos">Procedimentos</a></li>
+        <li><a href="#espaco">Nosso Espaço</a></li>
+        <li><a href="#coworking">Coworking</a></li>
+      </ul>
+    </div>
+
+    <div>
+      <p class="footer-col-title">Contato</p>
+      <div class="footer-contact">
+        <div class="footer-contact-row">
+          <span class="footer-icon">📍</span>
+          <span>Setor C Norte QNC AE 1, Torre A, Sala 305/306 — Edifício Prime Excelência Médica, Brasília DF</span>
+        </div>
+        <div class="footer-contact-row">
+          <span class="footer-icon">📱</span>
+          <a href="https://wa.me/556181770719?text=Olá!%20Gostaria%20de%20entrar%20em%20contato%20com%20a%20Lumi." target="_blank" rel="noopener">(61) 8177-0719</a>
+        </div>
+        <div class="footer-contact-row">
+          <span class="footer-icon">✉️</span>
+          <a href="mailto:esteticolumi@gmail.com">esteticolumi@gmail.com</a>
+        </div>
+        <div class="footer-contact-row">
+          <span class="footer-icon">📸</span>
+          <a href="https://instagram.com/estounalumi" target="_blank" rel="noopener">@estounalumi</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <span>© 2025 Lumi Centro de Estética Avançada. Todos os direitos reservados.</span>
+    <span>Brasília · DF</span>
+  </div>
+</footer>
+
+<script>
+  // Nav scroll
+  const nav = document.getElementById('main-nav');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 30);
+  }, { passive: true });
+
+  // Hamburger
+  document.getElementById('hamburger-btn').addEventListener('click', () => {
+    const links = document.querySelector('.nav-links');
+    const open = links.style.display === 'flex';
+    links.style.cssText = open
+      ? ''
+      : 'display:flex;flex-direction:column;position:fixed;top:68px;left:0;right:0;background:rgba(243,237,231,.97);padding:1.5rem var(--gutter);gap:1.5rem;z-index:99;backdrop-filter:blur(12px);box-shadow:0 4px 20px rgba(42,32,28,.1)';
+  });
+
+  // Scroll reveal
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+</script>
+</body>
+</html>
